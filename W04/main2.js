@@ -22,12 +22,12 @@ function main()
     var cube = new THREE.Mesh( geometry, material );
     scene.add( cube );
 
-    var light = new THREE.PointLight(0x111111);
+    var light = new THREE.PointLight(0xff0000);
     light.position.set(1, 1, 1);
     scene.add(light);
 
     var material = new THREE.MeshLambertMaterial({
-	color: 0x111111
+	color: 0xffffff
     });
 
     loop();
