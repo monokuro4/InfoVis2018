@@ -13,30 +13,27 @@ function main()
     camera.position.set( 0, 0, 5 );
     scene.add( camera );
 
+    var light = new THREE.PointLight();
+    light.position.set( 5, 5, 5 );
+    scene.add( light );
+
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize( width, height );
     document.body.appendChild( renderer.domElement );
 
-    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
+    var geometry = new THREE.TorusKnotGeometry( 1, 0.3, 100, 20 );
+    var material = new THREE.MeshLambertMaterial();
 
-    var light = new THREE.PointLight(0xffffff);
-    light.position.set(1, 1, 1);
-    scene.add(light);
-
-    var material = new THREE.MeshLambertMaterial({
-	color: 0xffffff
-    });
+    var torus_knot = new THREE.Mesh( geometry, material );
+    scene.add( torus_knot );
 
     loop();
 
     function loop()
     {
         requestAnimationFrame( loop );
-        cube.rotation.x += 0.001;
-        cube.rotation.y += 0.001;
+        torus_knot.rotation.x += 0.01;
+        torus_knot.rotation.y += 0.01;
         renderer.render( scene, camera );
     }
 }
