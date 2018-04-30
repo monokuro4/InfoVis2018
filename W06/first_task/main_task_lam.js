@@ -1,4 +1,4 @@
-function mainpho()
+function main()
 {
     var width = 500;
     var height = 500;
@@ -24,13 +24,13 @@ function mainpho()
     var geometry = new THREE.TorusKnotGeometry( 1, 0.3, 100, 20 );
     var material = new THREE.ShaderMaterial({
         vertexColors: THREE.VertexColors,
-        vertexShader: document.getElementById('phong.vert').text,
-        fragmentShader: document.getElementById('phong.frag').text,
+        vertexShader: document.getElementById('lambert.vert').text,
+        fragmentShader: document.getElementById('lambert.frag').text,
 	uniforms: {
-	    light_position: {type: 'v3', value: light.position},
-	    camela_position: {type: 'v3', value: camera.position}
+	    light_position: {type: 'v3', value: light.position}
 	}
     });
+    
 
     var torus_knot = new THREE.Mesh( geometry, material );
     scene.add( torus_knot );

@@ -1,11 +1,26 @@
 <html>
   <head>
-    <title>W06: Task 01</title>
+    <title>W06: Task 02</title>
   </head>
   <body>
     <script src="https://threejs.org/build/three.min.js"></script>
+    
+    <script type="x-shader/x-vertex" id="phong.vert">
+      varying vec3 point_color;
+      varying vec4 point_position;
+      varying vec3 normal_vector;
 
-    <script type="x-shader/x-vertex" id="lambert.vert">
+      void main()
+      {
+      point_color = color;
+      point_position = modelViewMatrix * vec4(position, 1.0);
+      normal_vector = normalMatrix * normal;
+      
+      gl_Position = projectionMatrix * point_position;
+      }
+    </script>
+    
+    <script type="x-shader/x-fragment" id="lambert.frag">
       varying vec3 point_color;
       varying vec4 point_position;
       varying vec3 normal_vector;
@@ -22,25 +37,23 @@
       
       void main()
       {
-      point_position = modelViewMatrix * vec4(position, 1.0);
-      normal_vector = normalMatrix * normal;
-      
-      vec3 C = color;
-      vec3 L = normalize(light_position - point_position.xyz);
+      vec3 C = point_color;
+      vec3 L = normalize( light_position - point_position.xyz );
       vec3 N = normalize( normal_vector);
-      point_color = LambertianReflection(C, L, N);
-      gl_Position = projectionMatrix * point_position;
+      
+      vec3 shaded_color = LambertianReflection(C, L, N);
+      gl_FragColor = vec4( shaded_color, 1.0 );
       }
     </script>
-
-    <script type="x-shader/x-vertex" id="phong.vert">
+    <script type="x-shader/x-fragment" id="phong.frag">
       varying vec3 point_color;
       varying vec4 point_position;
       varying vec3 normal_vector;
       uniform vec3 light_position;
       uniform vec3 camera_position;
 
-      vec3 PhongReflection( vec3 C, vec3 L, vec3 N, vec3 V){
+      vec3 PhongReflection( vec3 C, vec3 L, vec3 N, vec3 V)
+      {
       float ka = 0.3;
       float kd = 0.5;
       float ks = 0.8;
@@ -59,32 +72,23 @@
       
       void main()
       {
-      point_position = modelViewMatrix * vec4(position, 1.0);
-      normal_vector = normalMatrix * normal;
-      
-      vec3 C = color;
-      vec3 L = normalize(light_position - point_position.xyz);
+      vec3 C = point_color;
+      vec3 L = normalize( light_position - point_position.xyz );
       vec3 N = normalize( normal_vector);
-      vec3 V = normalize(camera_position - point_position.xyz);
-      point_color = PhongReflection(C, L, N, V);
-      gl_Position = projectionMatrix * point_position;
+      vec3 V = normalize( camera_position - point_position.xyz );
+      
+      vec3 shaded_color = PhongReflection(C, L, N, V);
+      gl_FragColor = vec4( shaded_color, 1.0 );
       }
     </script>
 
-    <script type="x-shader/x-fragment" id="gouraud.frag">
-      varying vec3 point_color;
-      void main()
-      {
-      gl_FragColor = vec4( point_color, 1.0 );
-      }
-    </script>
     <div id="app1" style="position:static; margin:10px">
-      "Gouraud-Lambertian"
+      "Phong-Lambertian"
     </div>
     <div id="app2" style="position:static; margin:10px">
-      "Gourand-Phong"
+      "Phong-Phong"
     </div>
-    <script src="main_task01.js"></script>
+    <script src="main_task02.js"></script>
     <script>
       main();
     </script>

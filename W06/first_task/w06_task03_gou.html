@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>W06: Task 01</title>
+    <title>W06: Task 03</title>
   </head>
   <body>
     <script src="https://threejs.org/build/three.min.js"></script>
@@ -12,15 +12,15 @@
       uniform vec3 light_position;
       uniform vec3 camera_position;
 
-      vec3 PhongReflection( vec3 C, vec3 L, vec3 N, vec3 V){
+      vec3 BlinnPhongReflection( vec3 C, vec3 L, vec3 N, vec3 V){
       float ka = 0.3;
       float kd = 0.5;
       float ks = 0.8;
       float n = 50.0;
 
-      vec3 R = reflect( -L, N);
+      vec3 H = normalize( L+V );
       float dd = max(dot(N,L), 0.0);
-      float ds = pow(max(dot(R, V), 0.0), n);
+      float ds = pow(max(dot(N, H), 0.0), n);
       if(dd <= 0.0){ds = 0.0;}
       
       float Ia = ka;
@@ -38,7 +38,7 @@
       vec3 L = normalize(light_position - point_position.xyz);
 	       vec3 N = normalize( normal_vector);
 	       vec3 V = normalize(camera_position - point_position.xyz);
-      point_color = PhongReflection(C, L, N, V);
+      point_color = BlinnPhongReflection(C, L, N, V);
       gl_Position = projectionMatrix * point_position;
       }
     </script>
@@ -50,9 +50,10 @@
       gl_FragColor = vec4( point_color, 1.0 );
       }
     </script>
-    <script src="main_task01_pho.js"></script>
+    <script src="main_task_pho.js"></script>
     <script>
-      mainpho();
+      main();
     </script>
+  </body>
   </body>
 </html>

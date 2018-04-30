@@ -1,4 +1,4 @@
-function renderTorus(app,vert)
+function renderTorus(app,vert,frag)
 {
     var width = 500;
     var height = 500;
@@ -25,7 +25,7 @@ function renderTorus(app,vert)
     var material = new THREE.ShaderMaterial({
         vertexColors: THREE.VertexColors,
         vertexShader: document.getElementById(vert).text,
-        fragmentShader: document.getElementById('gouraud.frag').text,
+        fragmentShader: document.getElementById(frag).text,
 	uniforms: {
 	    light_position: {type: 'v3', value: light.position},
 	    camela_position: {type: 'v3', value: camera.position}
@@ -51,6 +51,6 @@ function renderTorus(app,vert)
 
 function main()
 {
-    renderTorus('app1','lambert.vert');
-    renderTorus('app2','phong.vert');
+    renderTorus('app1','gouraud.vert','gouraud.frag');
+    renderTorus('app2','phong.vert','phong.frag');
 }
