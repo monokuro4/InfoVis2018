@@ -1,26 +1,29 @@
 function Isosurfaces( volume, isovalue )
 {
     var geometry = new THREE.Geometry();
-    var material = new THREE.MeshLambertMaterial();
+    var material = new THREE.MeshStandardMaterial();
     
     var smin = volume.min_value;
     var smax = volume.max_value;
     isovalue = KVS.Clamp( isovalue, smin, smax );
 
-    //add
-    var nvector = new THREE.Vector3( 1, 1, 1 ).normalize();
-
+    //add normal vector and reference point
+    var nvector = new THREE.Vector3( 1, 1, 1 );
+    var rpoint = new THREE.Vector3( volume.resolution.x / 2, volume.resolution.y / 2, volume.resolution.z / 2);
+    
     var lut = new KVS.MarchingCubesTable();
     var cell_index = 0;
     var counter = 0;
+    var v0_index = new THREE.Vector3();
     for ( var z = 0; z < volume.resolution.z - 1; z++ )
     {
         for ( var y = 0; y < volume.resolution.y - 1; y++ )
         {
             for ( var x = 0; x < volume.resolution.x - 1; x++ )
             {
-                var indices = cell_node_indices( cell_index++ );
-                var index = table_index( indices );
+		v0_index.set( x, y, z );
+		var indices = cell_node_indices( cell_index++ );
+                var index = table_index();
                 if ( index == 0 ) { continue; }
                 if ( index == 255 ) { continue; }
 
@@ -80,7 +83,7 @@ function Isosurfaces( volume, isovalue )
     material.color = new THREE.Color().setHex( cmap[isovalue][1] );
 
     //end task1
-
+    material.side = THREE.DoubleSide;
     return new THREE.Mesh( geometry, material );
 
 
@@ -101,19 +104,34 @@ function Isosurfaces( volume, isovalue )
         return [ id0, id1, id2, id3, id4, id5, id6, id7 ];
     }
 
-    function table_index( indices )
+    function table_index()
     {
-        var s0 = indices[0].dot( nvector );
-        var s1 = indices[1].dot( nvector );
-        var s2 = indices[2].dot( nvector );
-        var s3 = indices[3].dot( nvector );
-        var s4 = indices[4].dot( nvector );
-        var s5 = indices[5].dot( nvector );
-        var s6 = indices[6].dot( nvector );
-        var s7 = indices[7].dot( nvector );
-
-	//change
+	//  change for task4
 	
+	v0_index.sub( rpoint );
+        var s0 = v0_index.dot( nvector );
+
+	v0_index.x++;
+        var s1 = v0_index.dot( nvector );
+
+	v0_index.y++;
+        var s2 = v0_index.dot( nvector );
+
+	v0_index.x--;
+        var s3 = v0_index.dot( nvector );
+
+	v0_index.y--;
+	v0_index.z++;
+        var s4 = v0_index.dot( nvector );
+
+	v0_index.x++;
+        var s5 = v0_index.dot( nvector );
+
+	v0_index.y++;
+        var s6 = v0_index.dot( nvector );
+
+	v0_index.x--;
+        var s7 = v0_index.dot( nvector );
 
         var index = 0;
         if ( s0 > 0 ) { index |=   1; }
@@ -131,6 +149,7 @@ function Isosurfaces( volume, isovalue )
     // chang for task2
     function interpolated_vertex( v0, v1, s )
     {
+	/*
 	var vx = volume.resolution.x;
 	var vxy = vx * volume.resolution.y;
 	var id0 = v0.x + ( v0.y * vx ) + ( v0.z * vxy );
@@ -141,6 +160,18 @@ function Isosurfaces( volume, isovalue )
 	var t = ( s - s0 ) / ( s1 - s0 );
 	
         return new THREE.Vector3().addVectors( v0.multiplyScalar( 1 - t ), v1.multiplyScalar( t ) );
+
+	*/
+	var rv0 = new THREE.Vector3().addVectors( v0, rpoint.negate() );
+	var rv1 = new THREE.Vector3().addVectors( v0, rpoint.negate() );;
+	var s0 = rv0.dot( nvector );
+        var s1 = rv1.dot( nvector );
+	
+	var t = ( 0 - s0 ) / ( s1 - s0 );
+	
+        return new THREE.Vector3().addVectors( v0.multiplyScalar( 1 - t ), v1.multiplyScalar( t ) );
+	
     }
-    // end task2
+
+	// end task2
 }
